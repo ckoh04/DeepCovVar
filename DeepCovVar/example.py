@@ -20,24 +20,24 @@ def example_basic_usage():
         # Initialize classifier
         print("1. Initializing COVIDClassifier...")
         classifier = COVIDClassifier()
-        print("   ✓ Classifier initialized")
+        print("   Classifier initialized")
         
         # Load model for phase 1
         print("\n2. Loading model for Phase 1...")
         classifier.load_model(phase=1)
-        print("   ✓ Phase 1 model loaded")
+        print("   Phase 1 model loaded")
         
         # Example sequence (SARS-CoV-2 spike protein fragment)
         example_sequence = "MFVFLVLLPLVSSQCVNLTTRTQLPPAYTNSFTRGVYYPDKVFRSSVLHSTQDLFLPFFSNVTWFHAIHVSGTNGTKRFDNPVLPFNDGVYFASTEKSNIIRGWIFGTTLDSKTQSLLIVNNATNVVIKVCEFQFCNDPFLGVYYHKNNKSWMESEFRVYSSANNCTFEYVSQPFLMDLEGKQGNFKNLREFVFKNIDGYFKIYSKHTPINLVRDLPQGFSALEPLVDLPIGINITRFQTLLALHRSYLTPGDSSSGWTAGAAAYYVGYLQPRTFLLKYNENGTITDAVDCALDPLSETKCTLKSFTVEKGIYQTSNFRVQPTESIVRFPNITNLCPFGEVFNATRFASVYAWNRKRISNCVADYSVLYNSASFSTFKCYGVSPTKLNDLCFTNVYADSFVIRGDEVRQIAPGQTGKIADYNYKLPDDFTGCVIAWNSNNLDSKVGGNYNYLYRLFRKSNLKPFERDISTEIYQAGSTPCNGVEGFNCYFPLQSYGFQPTNGVGYQPYRVVVLSFELLHAPATVCGPKKSTNLVKNKCVNF"
         
         print(f"\n3. Predicting on example sequence (length: {len(example_sequence)})...")
         prediction = classifier.predict_phase(example_sequence, phase=1)
-        print(f"   ✓ Prediction: {prediction}")
+        print(f"   Prediction: {prediction}")
         
         print("\n4. Example completed successfully!")
         
     except Exception as e:
-        print(f"   ✗ Error: {e}")
+        print(f"   Error: {e}")
         return False
     
     return True
@@ -54,24 +54,24 @@ def example_batch_processing():
         # Initialize classifier
         print("1. Initializing COVIDClassifier...")
         classifier = COVIDClassifier()
-        print("   ✓ Classifier initialized")
+        print("   Classifier initialized")
         
         # Load model for phase 1
         print("\n2. Loading model for Phase 1...")
         classifier.load_model(phase=1)
-        print("   ✓ Phase 1 model loaded")
+        print("   Phase 1 model loaded")
         
         # Check if test file exists
         test_file = Path(__file__).parent / "test.fasta"
         if not test_file.exists():
-            print("   ⚠ Test file not found, skipping batch example")
+            print("   Warning: Test file not found, skipping batch example")
             return True
         
         print(f"\n3. Processing sequences from {test_file.name}...")
         
         # Read sequences
         sequences = list(SeqIO.parse(test_file, "fasta"))
-        print(f"   ✓ Loaded {len(sequences)} sequences")
+        print(f"   Loaded {len(sequences)} sequences")
         
         # Process first few sequences
         max_sequences = min(3, len(sequences))
@@ -87,7 +87,7 @@ def example_batch_processing():
         print("\n4. Batch processing example completed!")
         
     except Exception as e:
-        print(f"   ✗ Error: {e}")
+        print(f"   Error: {e}")
         return False
     
     return True
@@ -107,10 +107,10 @@ def main():
         print("-" * len(example_name))
         
         if not example_func():
-            print(f"❌ {example_name} failed")
+            print(f"{example_name} failed")
             return 1
     
-    print("\n🎉 All examples completed successfully!")
+    print("\nAll examples completed successfully!")
     print("\nTo run DeepCovVar from command line:")
     print("  python -m DeepCovVar -f input.fasta -o results -p 1")
     

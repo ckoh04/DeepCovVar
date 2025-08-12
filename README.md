@@ -5,10 +5,12 @@ A comprehensive bioinformatics package for predicting and classifying COVID-19 v
 ## Features
 
 - **Five-Phase Classification Pipeline**: Multi-stage classification from virus detection to variant identification
+- **Automatic Sequence Processing**: Intelligent detection and conversion of nucleotide sequences to protein sequences
+- **Prodigal Integration**: Seamless nucleotide-to-protein conversion using Prodigal gene prediction software
 - **Advanced Deep Learning Models**: Keras and PyTorch-based models for optimal performance
 - **Quantized Models**: Space-optimized models for efficient deployment
 - **Comprehensive Sequence Analysis**: Feature extraction and preprocessing capabilities
-- **Command-Line Interface**: Easy-to-use CLI for batch processing
+- **Command-Line Interface**: Easy-to-use CLI for batch processing with pipeline automation
 - **Python API**: Programmatic access for integration into workflows
 
 ## Installation
@@ -21,6 +23,15 @@ cd DeepCovVar
 # Install dependencies
 pip install -r requirements.txt
 
+# Install Prodigal for nucleotide sequence conversion
+# Option 1: Using conda
+conda install -c bioconda prodigal
+
+# Option 2: From source
+git clone https://github.com/hyattpd/Prodigal.git
+cd Prodigal
+make install
+
 # Install the package
 pip install -e .
 ```
@@ -30,14 +41,23 @@ pip install -e .
 ### Command Line Usage
 
 ```bash
-# Basic usage
-python -m DeepCovVar -f input.fasta -o results -p 1
+# Basic usage with automatic nucleotide conversion
+python -m DeepCovVar input.fasta --phase 1
 
-# With verbose logging
-python -m DeepCovVar -f sequences.fa -o output -p 4 --verbose
+# Run complete pipeline (all phases)
+python -m DeepCovVar input.fasta --run-all
 
-# Specify custom model directory
-python -m DeepCovVar -f input.fasta -o results -p 2 --model-dir /path/to/models
+# Run complete pipeline with custom output directory
+python -m DeepCovVar input.fasta --run-all --output-dir results/
+
+# Specify Prodigal path for nucleotide conversion
+python -m DeepCovVar input.fasta --prodigal-path /usr/local/bin/prodigal
+
+# Disable automatic conversion
+python -m DeepCovVar input.fasta --no-auto-convert
+
+# Force conversion even if sequences appear to be protein
+python -m DeepCovVar input.fasta --force-convert
 ```
 
 ### Python API Usage
@@ -45,16 +65,31 @@ python -m DeepCovVar -f input.fasta -o results -p 2 --model-dir /path/to/models
 ```python
 from DeepCovVar.covid_classifier import COVIDClassifier
 
-# Initialize classifier
-classifier = COVIDClassifier()
+# Initialize classifier with automatic nucleotide conversion
+classifier = COVIDClassifier(prodigal_path="/usr/local/bin/prodigal")
 
-# Load model for specific phase
-classifier.load_model(phase=1)
+# Run single phase
+results = classifier.predict(phase=1, input_file="sequences.fasta")
 
-# Predict on a sequence
-prediction = classifier.predict_phase("ATGCGATCGATCG...", phase=1)
-print(f"Prediction: {prediction}")
+# Run complete pipeline (all phases)
+all_results = classifier.run_all_phases(
+    input_file="sequences.fasta",
+    output_dir="results/",
+    base_filename="my_analysis"
+)
+
+# Manual sequence processing
+processed_file, was_converted = classifier.process_input_sequences("input.fasta")
 ```
+
+## Sequence Processing
+
+DeepCovVar automatically detects and processes different sequence types:
+
+- **Automatic Detection**: Intelligently identifies nucleotide vs protein sequences
+- **Nucleotide Conversion**: Uses Prodigal for high-quality nucleotide-to-protein conversion
+- **Seamless Integration**: Works transparently with existing workflows
+- **Multiple Modes**: Supports single genome and metagenome processing
 
 ## Classification Phases
 
