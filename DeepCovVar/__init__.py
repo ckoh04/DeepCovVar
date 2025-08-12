@@ -1,6 +1,6 @@
 """
 DeepCovVar: Deep Learning-Based COVID-19 Variant Classification Tool
-Author: AI Lab Team
+Author: 
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -62,13 +62,13 @@ Dependencies:
     Optional:
         - CUDA (for GPU acceleration)
 
-Author: AI Lab Team
+Author: 
 Version: 1.0.0
 License: GPL-3.0
 """
 
 __version__ = "1.0.0"
-__author__ = "AI Lab Team"
+__author__ = ""
 __license__ = "GPL-3.0"
 
 from .covid_classifier import COVIDClassifier

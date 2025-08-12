@@ -135,6 +135,10 @@ output/
 temp/
 deepcovvar.log
 
+# Local documentation files (not for GitHub)
+MIGRATION_GUIDE.md
+PROJECT_SUMMARY.md
+
 # Model files (if not using quantized versions)
 *.h5
 *.keras

@@ -80,10 +80,10 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 If you use DeepCovVar in your research, please cite:
 
 ```
-@software{deepcovvar2024,
+@software{deepcovvar2025,
   title={DeepCovVar: Deep Learning-Based COVID-19 Variant Classification Tool},
-  author={AI Lab Team},
-  year={2024},
-  url={https://github.com/ai-lab/DeepCovVar}
+  author={},
+  year={2025},
+  url={https://github.com/ckoh04/DeepCovVar}
 }
 ```
