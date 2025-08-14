@@ -139,6 +139,11 @@ deepcovvar.log
 MIGRATION_GUIDE.md
 PROJECT_SUMMARY.md
 
+# Local utility files (not for GitHub)
+example_pipeline.py
+run_deepcovvar.sh
+test_pipeline.py
+
 # Model files (if not using quantized versions)
 *.h5
 *.keras
