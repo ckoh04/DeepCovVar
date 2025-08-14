@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-Test script for DeepCovVar package
-"""
-
 import sys
 from pathlib import Path
 
@@ -18,7 +14,6 @@ else:
 sys.path.insert(0, parent_dir)
 
 def test_imports():
-    """Test that all modules can be imported correctly."""
     try:
         # Test sequence converter (this should work)
         from sequence_converter import SequenceTypeDetector
@@ -57,7 +52,6 @@ def test_imports():
         return False
 
 def test_classifier_initialization():
-    """Test that the COVIDClassifier can be initialized."""
     try:
         # Test sequence processor (this may fail if Prodigal is not installed)
         try:
@@ -101,7 +95,6 @@ def test_classifier_initialization():
         return False
 
 def test_model_files():
-    """Test that model files exist and are accessible."""
     try:
         # Check models in parent directory
         model_dir = Path(__file__).parent.parent / "models"
@@ -128,7 +121,6 @@ def test_model_files():
         return True  # Don't fail the test for model issues
 
 def main():
-    """Run all tests."""
     print("DeepCovVar Package Tests")
     print("=" * 40)
     

@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Debug import paths."""
-
 import sys
 import os
 from pathlib import Path

@@ -45,10 +45,11 @@ class TransformerModel(nn.Module):
         return logits
 
 class COVIDClassifier:
-    def __init__(self, model_dir="models", prodigal_path=None):
+    def __init__(self, model_dir="models", prodigal_path=None, batch_size=32):
         self.model_dir = Path(model_dir)
         self.feature_extractor = FEATURE()
         self.sequence_processor = SequenceProcessor(prodigal_path)
+        self.batch_size = batch_size  # Configurable batch size for memory management
         
         self.models_config = {
             1: {
@@ -82,7 +83,7 @@ class COVIDClassifier:
             5: {
                 'file': 'p5_final_model_quantized.pt',
                 'description': 'SARS-CoV-2 variant classification (Quantized)',
-                'classes':  ['Omicron', 'Alpha', 'Delta', 'Others'], 
+                'classes': ['Omicron', 'Alpha', 'Delta', 'Epsilon', 'Iota', 'Gamma', 'Others'], 
                 'feature_size': None, 
                 'type': 'pytorch_transformer'
             }
@@ -98,12 +99,12 @@ class COVIDClassifier:
         if not config_path.exists():
             raise FileNotFoundError(f"Config file not found: {config_path}")
         
-        config = torch.load(config_path, map_location='gpu')
+        config = torch.load(config_path, map_location='cpu')
         print(f"Loaded model config: {config}")
         
         
         base_model_name = config.get('base_model_name', 'facebook/esm2_t33_650M_UR50D')
-        num_classes = config.get('num_classes', 4)
+        num_classes = config.get('num_classes', 7)
         
         print(f"Loading ESM-2 model: {base_model_name}")
         
@@ -203,7 +204,7 @@ class COVIDClassifier:
             if config['type'] == 'keras':
                 model = tf.keras.models.load_model(str(model_path))
             elif config['type'] == 'pytorch':
-                model = torch.load(str(model_path), map_location='gpu')
+                model = torch.load(str(model_path), map_location='cpu')
                 model.eval()
         
         self.loaded_models[phase] = model
@@ -356,15 +357,50 @@ class COVIDClassifier:
         elif config['type'] == 'pytorch_transformer':
             # For ESM-2 transformer model, we need to tokenize sequences instead of using CKSAAP features
             print("Tokenizing sequences for ESM-2 transformer model...")
-            input_ids, attention_mask = self.tokenize_sequences(sequences)
             
-            with torch.no_grad():
-                outputs = model(input_ids=input_ids, attention_mask=attention_mask)
-                logits = outputs.logits if hasattr(outputs, 'logits') else outputs
-                predictions = torch.softmax(logits, dim=1).numpy()
+            # Process in batches to avoid memory issues
+            batch_size = self.batch_size  # Use configurable batch size
+            predicted_classes = []
+            confidence_scores = []
+            
+            print(f"Processing {len(sequences)} sequences in batches of {batch_size}")
+            
+            for i in range(0, len(sequences), batch_size):
+                batch_end = min(i + batch_size, len(sequences))
+                batch_sequences = sequences[i:batch_end]
+                batch_seq_ids = seq_ids[i:batch_end]
                 
-                predicted_classes = np.argmax(predictions, axis=1)
-                confidence_scores = np.max(predictions, axis=1)
+                print(f"Processing batch {i//batch_size + 1}/{(len(sequences) + batch_size - 1)//batch_size} "
+                      f"(sequences {i+1}-{batch_end})")
+                
+                try:
+                    # Tokenize batch
+                    input_ids, attention_mask = self.tokenize_sequences(batch_sequences)
+                    
+                    with torch.no_grad():
+                        outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+                        logits = outputs.logits if hasattr(outputs, 'logits') else outputs
+                        batch_predictions = torch.softmax(logits, dim=1).numpy()
+                        
+                        batch_pred_classes = np.argmax(batch_predictions, axis=1)
+                        batch_conf_scores = np.max(batch_predictions, axis=1)
+                        
+                        predicted_classes.extend(batch_pred_classes)
+                        confidence_scores.extend(batch_conf_scores)
+                        
+                        # Clear GPU memory if available
+                        if torch.cuda.is_available():
+                            torch.cuda.empty_cache()
+                            
+                except Exception as e:
+                    print(f"Error processing batch {i//batch_size + 1}: {e}")
+                    # Fill with default values for failed batch
+                    batch_size_actual = batch_end - i
+                    predicted_classes.extend([0] * batch_size_actual)
+                    confidence_scores.extend([0.0] * batch_size_actual)
+            
+            predicted_classes = np.array(predicted_classes)
+            confidence_scores = np.array(confidence_scores)
     
         results = []
         for i, (seq_id, pred_class, confidence) in enumerate(zip(seq_ids, predicted_classes, confidence_scores)):

@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
-"""
-Test runner for DeepCovVar tests.
-
-This script runs all available tests in the tests directory.
-"""
-
 import sys
 import subprocess
 from pathlib import Path
 
 def run_test_script(script_path):
-    """Run a test script and return the result."""
     try:
         result = subprocess.run([sys.executable, str(script_path)], 
                               capture_output=True, text=True, timeout=60)
@@ -40,7 +33,6 @@ def run_test_script(script_path):
         return False
 
 def main():
-    """Run all available tests."""
     print("DeepCovVar Test Suite")
     print("=" * 50)
     

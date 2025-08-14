@@ -17,6 +17,7 @@ Version: 1.0.0
 
 Usage:
     python -m DeepCovVar [options] -f <fasta_file> -o <output_dir> -p <phase>
+    python -m DeepCovVar [options] -f <fasta_file> -o <output_dir> --all-phases
 
 Dependencies:
     - pandas
@@ -144,35 +145,46 @@ def validate_output_dir(output_dir: str) -> bool:
     return True
 
 def main():
-    """Main function for command-line interface."""
+    """Main entry point for DeepCovVar."""
     parser = argparse.ArgumentParser(
-        description="DeepCovVar: COVID-19 Variant Classification Tool",
+        description='DeepCovVar: COVID-19 Variant Classification Tool',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python -m DeepCovVar -f input.fasta -o results -p 1
-  python -m DeepCovVar -f sequences.fa -o output -p 4 --verbose
+  # Run a specific phase
+  python -m DeepCovVar -f input.fasta -o output_dir -p 5
+  
+  # Run all phases (recommended)
+  python -m DeepCovVar -f input.fasta -o output_dir --all-phases
+  
+  # Use default output directory (current directory)
+  python -m DeepCovVar -f input.fasta --all-phases
         """
     )
     
     parser.add_argument(
         '-f', '--fasta',
         required=True,
-        help='Input FASTA file containing sequences to classify'
+        help='Input FASTA file containing sequences'
     )
     
     parser.add_argument(
         '-o', '--output',
-        required=True,
-        help='Output directory for results'
+        default='.',
+        help='Output directory for results (default: current directory)'
     )
     
     parser.add_argument(
         '-p', '--phase',
         type=int,
         choices=[1, 2, 3, 4, 5],
-        required=True,
-        help='Classification phase (1-5)'
+        help='Specific phase to run (1-5). Use --all-phases to run complete pipeline.'
+    )
+    
+    parser.add_argument(
+        '--all-phases',
+        action='store_true',
+        help='Run all phases from 1 to 5 (recommended)'
     )
     
     parser.add_argument(
@@ -194,6 +206,13 @@ Examples:
     )
     
     args = parser.parse_args()
+    
+    # Validate arguments
+    if args.phase and args.all_phases:
+        parser.error("Cannot specify both --phase and --all-phases")
+    
+    if not args.phase and not args.all_phases:
+        parser.error("Must specify either --phase or --all-phases")
     
     # Setup logging
     log_level = "DEBUG" if args.verbose else "INFO"
@@ -218,58 +237,95 @@ Examples:
         logger.info(f"Using model directory: {model_dir}")
         classifier = COVIDClassifier(model_dir=str(model_dir))
         
-        # Load model for specified phase
-        logger.info(f"Loading model for phase {args.phase}")
-        classifier.load_model(args.phase)
-        
-        # Process sequences
-        logger.info(f"Processing sequences from {args.fasta}")
-        start_time = time.time()
-        
-        # Read sequences
-        from Bio import SeqIO
-        sequences = list(SeqIO.parse(args.fasta, "fasta"))
-        logger.info(f"Loaded {len(sequences)} sequences")
-        
-        # Process each sequence
-        results = []
-        for i, seq_record in enumerate(sequences):
-            logger.info(f"Processing sequence {i+1}/{len(sequences)}: {seq_record.id}")
+        if args.all_phases:
+            # Run complete pipeline
+            logger.info("Running complete COVID classification pipeline (all phases)")
+            start_time = time.time()
             
-            # Extract features and predict
-            try:
-                prediction = classifier.predict_phase(str(seq_record.seq), args.phase)
-                results.append({
-                    'sequence_id': seq_record.id,
-                    'sequence': str(seq_record.seq),
-                    'phase': args.phase,
-                    'prediction': prediction
-                })
-                logger.info(f"Prediction for {seq_record.id}: {prediction}")
-            except Exception as e:
-                logger.error(f"Error processing sequence {seq_record.id}: {e}")
-                results.append({
-                    'sequence_id': seq_record.id,
-                    'sequence': str(seq_record.seq),
-                    'phase': args.phase,
-                    'prediction': 'ERROR',
-                    'error': str(e)
-                })
-        
-        # Save results
-        output_file = Path(args.output) / f"phase_{args.phase}_results.csv"
-        df = pd.DataFrame(results)
-        df.to_csv(output_file, index=False)
-        
-        elapsed_time = time.time() - start_time
-        logger.info(f"Processing completed in {elapsed_time:.2f} seconds")
-        logger.info(f"Results saved to: {output_file}")
-        
-        # Print summary
-        print(f"\nDeepCovVar Phase {args.phase} Classification Complete!")
-        print(f"Processed {len(sequences)} sequences")
-        print(f"Results saved to: {output_file}")
-        print(f"Total time: {elapsed_time:.2f} seconds")
+            # Get base filename for output
+            base_filename = Path(args.fasta).stem
+            
+            # Run all phases
+            all_results = classifier.run_all_phases(
+                input_file=args.fasta,
+                output_dir=args.output,
+                base_filename=base_filename
+            )
+            
+            elapsed_time = time.time() - start_time
+            logger.info(f"Complete pipeline completed in {elapsed_time:.2f} seconds")
+            
+            # Print summary
+            print(f"\nDeepCovVar Complete Pipeline Finished!")
+            print(f"Processed: {args.fasta}")
+            print(f"Results saved to: {args.output}")
+            print(f"Total time: {elapsed_time:.2f} seconds")
+            
+        else:
+            # Run specific phase
+            logger.info(f"Loading model for phase {args.phase}")
+            classifier.load_model(args.phase)
+            
+            # Process sequences
+            logger.info(f"Processing sequences from {args.fasta}")
+            start_time = time.time()
+            
+            # Read sequences
+            from Bio import SeqIO
+            sequences = list(SeqIO.parse(args.fasta, "fasta"))
+            logger.info(f"Loaded {len(sequences)} sequences")
+            
+            # Process each sequence
+            results = []
+            for i, seq_record in enumerate(sequences):
+                logger.info(f"Processing sequence {i+1}/{len(sequences)}: {seq_record.id}")
+                
+                # Extract features and predict
+                try:
+                    # Use the correct predict method
+                    prediction_result = classifier.predict(args.phase, args.fasta)
+                    
+                    # Extract prediction for this specific sequence
+                    seq_prediction = prediction_result[prediction_result['Sequence_ID'] == seq_record.id]
+                    if not seq_prediction.empty:
+                        prediction = seq_prediction.iloc[0]['Predicted_Class']
+                        confidence = seq_prediction.iloc[0]['Confidence']
+                    else:
+                        prediction = 'Unknown'
+                        confidence = 0.0
+                    
+                    results.append({
+                        'sequence_id': seq_record.id,
+                        'sequence': str(seq_record.seq),
+                        'phase': args.phase,
+                        'prediction': prediction,
+                        'confidence': confidence
+                    })
+                    logger.info(f"Prediction for {seq_record.id}: {prediction} (confidence: {confidence:.3f})")
+                except Exception as e:
+                    logger.error(f"Error processing sequence {seq_record.id}: {e}")
+                    results.append({
+                        'sequence_id': seq_record.id,
+                        'sequence': str(seq_record.seq),
+                        'phase': args.phase,
+                        'prediction': 'ERROR',
+                        'error': str(e)
+                    })
+            
+            # Save results
+            output_file = Path(args.output) / f"phase_{args.phase}_results.csv"
+            df = pd.DataFrame(results)
+            df.to_csv(output_file, index=False)
+            
+            elapsed_time = time.time() - start_time
+            logger.info(f"Processing completed in {elapsed_time:.2f} seconds")
+            logger.info(f"Results saved to: {output_file}")
+            
+            # Print summary
+            print(f"\nDeepCovVar Phase {args.phase} Classification Complete!")
+            print(f"Processed {len(sequences)} sequences")
+            print(f"Results saved to: {output_file}")
+            print(f"Total time: {elapsed_time:.2f} seconds")
         
     except Exception as e:
         logger.error(f"Fatal error: {e}")

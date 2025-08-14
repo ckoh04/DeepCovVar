@@ -38,26 +38,33 @@ pip install -e .
 
 ## Quick Start
 
+### Simple Usage (Recommended)
+
+```bash
+# Run complete pipeline with minimal arguments
+python run_deepcovvar_simple.py input.fasta
+
+# Run with custom output directory
+python run_deepcovvar_simple.py input.fasta results/
+
+# Run with verbose output
+python run_deepcovvar_simple.py --verbose input.fasta results/
+```
+
 ### Command Line Usage
 
 ```bash
-# Basic usage with automatic nucleotide conversion
-python -m DeepCovVar input.fasta --phase 1
+# Run complete pipeline (all phases) - recommended
+python -m DeepCovVar -f input.fasta -o output_dir --all-phases
 
-# Run complete pipeline (all phases)
-python -m DeepCovVar input.fasta --run-all
+# Run specific phase
+python -m DeepCovVar -f input.fasta -o output_dir -p 5
 
-# Run complete pipeline with custom output directory
-python -m DeepCovVar input.fasta --run-all --output-dir results/
+# Use default output directory (current directory)
+python -m DeepCovVar -f input.fasta --all-phases
 
-# Specify Prodigal path for nucleotide conversion
-python -m DeepCovVar input.fasta --prodigal-path /usr/local/bin/prodigal
-
-# Disable automatic conversion
-python -m DeepCovVar input.fasta --no-auto-convert
-
-# Force conversion even if sequences appear to be protein
-python -m DeepCovVar input.fasta --force-convert
+# Run with verbose output
+python -m DeepCovVar -f input.fasta -o output_dir --all-phases --verbose
 ```
 
 ### Python API Usage
@@ -65,8 +72,8 @@ python -m DeepCovVar input.fasta --force-convert
 ```python
 from DeepCovVar.covid_classifier import COVIDClassifier
 
-# Initialize classifier with automatic nucleotide conversion
-classifier = COVIDClassifier(prodigal_path="/usr/local/bin/prodigal")
+# Initialize classifier
+classifier = COVIDClassifier()
 
 # Run single phase
 results = classifier.predict(phase=1, input_file="sequences.fasta")

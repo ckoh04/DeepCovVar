@@ -1,0 +1,52 @@
+COVID CLASSIFICATION PIPELINE SUMMARY REPORT
+==================================================
+
+Input file: test_5_sequences.fasta
+Generated: 2025-08-14 10:46:24.984557
+
+PHASE RESULTS SUMMARY:
+------------------------------
+
+Phase 1: Virus sequences vs Others (Quantized)
+Status: Completed
+Classes: Virus, Non-virus
+Sequences processed: 55
+Predictions:
+  Virus: 45
+  Non-virus: 10
+
+Phase 2: (+)ssRNA (Class IV) vs Others (Quantized)
+Status: Completed
+Classes: Others, (+)ssRNA
+Sequences processed: 55
+Predictions:
+  (+)ssRNA: 41
+  Others: 14
+
+Phase 3: Further classification of group IV ssRNA(+) (Quantized)
+Status: Completed
+Classes: Other ssRNA(+), Coronavirus
+Sequences processed: 55
+Predictions:
+  Coronavirus: 44
+  Other ssRNA(+): 11
+
+Phase 4: SARS-CoV-2 vs other coronaviruses (Quantized)
+Status: Completed
+Classes: SARS-CoV-2, MERS, SARS, Others
+Sequences processed: 55
+Predictions:
+  SARS-CoV-2: 44
+  Others: 6
+  SARS: 5
+
+Phase 5: SARS-CoV-2 variant classification (Quantized)
+Status: Completed
+Classes: Omicron, Alpha, Delta, Epsilon, Iota, Gamma, Others
+Sequences processed: 55
+Predictions:
+  Others: 30
+  Delta: 25
+
+==================================================
+End of Report
