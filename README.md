@@ -104,14 +104,51 @@ DeepCovVar automatically detects and processes different sequence types:
 2. **Phase 2**: (+)ssRNA (Class IV) vs Others
 3. **Phase 3**: Coronavirus vs Other ssRNA(+)
 4. **Phase 4**: SARS-CoV-2 vs Other Coronaviruses
-5. **Phase 5**: SARS-CoV-2 Variant Classification
+5. **Phase 5**: SARS-CoV-2 Variant Classification (Omicron, Alpha, Delta, Epsilon, Iota, Gamma, Others)
 
 ## Model Architecture
 
 - **Phase 1-4**: Keras-based neural networks with quantized weights
-- **Phase 5**: PyTorch Transformer model for sequence classification
+- **Phase 5**: PyTorch Transformer model (ESM-2) for sequence classification
 - **Feature Extraction**: CKSAAP (Composition of k-spaced Amino Acid Pairs)
 - **Optimization**: Quantized models for reduced memory footprint
+
+## Output Files
+
+When running all phases, you'll get:
+- `input_phase_1_results.csv` - Phase 1 results
+- `input_phase_2_results.csv` - Phase 2 results  
+- `input_phase_3_results.csv` - Phase 3 results
+- `input_phase_4_results.csv` - Phase 4 results
+- `input_phase_5_results.csv` - Phase 5 results
+- `input_pipeline_summary.txt` - Summary report
+
+## Troubleshooting
+
+### Common Issues
+1. **Model files not found**: Ensure the `models/` directory contains the required model files
+2. **Prodigal not found**: Install Prodigal for nucleotide sequence processing
+3. **Memory issues**: The tool automatically uses CPU-only mode and batch processing to avoid memory problems
+
+### Verbose Mode
+Use `--verbose` flag to get detailed logging information for debugging.
+
+## Performance Notes
+
+- **Complete Pipeline**: Running all phases takes longer but provides comprehensive analysis
+- **Single Phase**: Faster if you only need specific classification
+- **Sequence Processing**: Nucleotide sequences are automatically converted to protein sequences using Prodigal
+- **Model Loading**: Models are loaded on-demand for each phase
+- **Memory Management**: Automatic batch processing prevents out-of-memory errors
+
+## Best Practices
+
+1. **Use `--all-phases`** for comprehensive analysis
+2. **Provide output directory** to organize results
+3. **Check model files** exist before running
+4. **Use verbose mode** for debugging
+5. **Start with simple wrapper** if you're new to the tool
+6. **For large datasets**: Use smaller batch sizes if memory issues occur
 
 ## License
 
