@@ -289,9 +289,15 @@ Examples:
                     if not seq_prediction.empty:
                         prediction = seq_prediction.iloc[0]['Predicted_Class']
                         confidence = seq_prediction.iloc[0]['Confidence']
+                        # Convert percentage string back to float for logging
+                        try:
+                            confidence_float = float(confidence.strip('%')) / 100.0
+                        except:
+                            confidence_float = 0.0
                     else:
                         prediction = 'Unknown'
-                        confidence = 0.0
+                        confidence = '0.00%'
+                        confidence_float = 0.0
                     
                     results.append({
                         'sequence_id': seq_record.id,
@@ -300,7 +306,7 @@ Examples:
                         'prediction': prediction,
                         'confidence': confidence
                     })
-                    logger.info(f"Prediction for {seq_record.id}: {prediction} (confidence: {confidence:.3f})")
+                    logger.info(f"Prediction for {seq_record.id}: {prediction} (confidence: {confidence})")
                 except Exception as e:
                     logger.error(f"Error processing sequence {seq_record.id}: {e}")
                     results.append({

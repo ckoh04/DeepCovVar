@@ -423,6 +423,7 @@ class COVIDClassifier:
             batch_size = self.batch_size  # Use configurable batch size
             predicted_classes = []
             confidence_scores = []
+            all_predictions = []  # Store all predictions for probability display
             
             print(f"Processing {len(sequences)} sequences in batches of {batch_size}")
             
@@ -448,6 +449,7 @@ class COVIDClassifier:
                         
                         predicted_classes.extend(batch_pred_classes)
                         confidence_scores.extend(batch_conf_scores)
+                        all_predictions.extend(batch_predictions)  # Store all predictions
                         
                         # Clear GPU memory if available
                         if torch.cuda.is_available():
@@ -459,19 +461,49 @@ class COVIDClassifier:
                     batch_size_actual = batch_end - i
                     predicted_classes.extend([0] * batch_size_actual)
                     confidence_scores.extend([0.0] * batch_size_actual)
+                    # Create dummy predictions for failed batch
+                    dummy_predictions = np.zeros((batch_size_actual, len(config['classes'])))
+                    dummy_predictions[:, 0] = 1.0  # Set first class to 100%
+                    all_predictions.extend(dummy_predictions)
             
             predicted_classes = np.array(predicted_classes)
             confidence_scores = np.array(confidence_scores)
+            all_predictions = np.array(all_predictions)
     
         results = []
         for i, (seq_id, pred_class, confidence) in enumerate(zip(seq_ids, predicted_classes, confidence_scores)):
             class_name = config['classes'][pred_class] if pred_class < len(config['classes']) else 'Unknown'
-            results.append({
+            
+            # Get probabilities for all classes
+            if config['type'] == 'keras':
+                if predictions.shape[1] > 1:
+                    # Multi-class: get probabilities for all classes
+                    all_probs = predictions[i]
+                else:
+                    # Binary: create [1-pred, pred] for [class0, class1]
+                    pred_val = predictions[i][0] if len(predictions[i]) == 1 else predictions[i][0]
+                    all_probs = [1 - pred_val, pred_val]
+            elif config['type'] == 'pytorch':
+                all_probs = predictions[i]
+            elif config['type'] == 'pytorch_transformer':
+                all_probs = all_predictions[i]
+            
+            # Create result row with all class probabilities
+            result_row = {
                 'Sequence_ID': seq_id,
                 'Predicted_Class': class_name,
-                'Confidence': confidence,
-                'Class_Index': pred_class
-            })
+                'Confidence': f"{confidence:.2%}"
+            }
+            
+            # Add probabilities for each class
+            for j, class_name_j in enumerate(config['classes']):
+                if j < len(all_probs):
+                    prob_value = all_probs[j]
+                    result_row[f'{class_name_j}_Probability'] = f"{prob_value:.2%}"
+                else:
+                    result_row[f'{class_name_j}_Probability'] = "0.00%"
+            
+            results.append(result_row)
         
 
         results_df = pd.DataFrame(results)
