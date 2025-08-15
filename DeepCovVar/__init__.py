@@ -25,7 +25,7 @@ Key Features:
     - Comprehensive sequence analysis
     - Efficient data preprocessing
     - Detailed output reporting
-    - Quantized models for space optimization
+    - Optimized models for space optimization
 
 Modules:
     - covid_classifier: Main COVID-19 classifier class

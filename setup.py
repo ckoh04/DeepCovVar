@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 DeepCovVar: Deep Learning-Based COVID-19 Variant Classification Tool
-Copyright (C) 2024 AI Lab Team
+Copyright (C) 2025
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,9 +31,9 @@ AUTHOR = ""
 AUTHOR_EMAIL = ""
 MAINTAINER = ""
 MAINTAINER_EMAIL = ""
-URL = "https://github.com/ckoh04/DeepCovVar"
-DOCUMENTATION = "https://github.com/ckoh04/DeepCovVar/docs"
-REPOSITORY = "https://github.com/ckoh04/DeepCovVar"
+# URL = "https://github.com/ckoh04/DeepCovVar"
+# DOCUMENTATION = "https://github.com/ckoh04/DeepCovVar/docs"
+# REPOSITORY = "https://github.com/ckoh04/DeepCovVar"
 LICENSE = "GPL-3.0"
 PYTHON_REQUIRES = ">=3.8"
 
@@ -56,14 +56,14 @@ def read_requirements(filename="requirements.txt"):
 # Core package requirements with versions
 INSTALL_REQUIRES = [
     'numpy>=1.24.0',
-    'pandas>=2.1.0',
+    'pandas',
     'tensorflow>=2.13.0',
     'keras>=2.13.1',
     'torch>=2.0.0',
     'torchvision>=0.15.0',
     'biopython>=1.81',
     'scikit-learn>=1.3.0',
-    'scipy>=1.11.0',
+    'scipy',
     'h5py>=3.9.0',
     'matplotlib>=3.7.2',
     'seaborn>=0.12.2',
@@ -109,12 +109,12 @@ setuptools.setup(
     author_email=AUTHOR_EMAIL,
     maintainer=MAINTAINER,
     maintainer_email=MAINTAINER_EMAIL,
-    url=URL,
-    project_urls={
-        "Documentation": DOCUMENTATION,
-        "Source Code": REPOSITORY,
-        "Bug Tracker": f"{REPOSITORY}/issues",
-    },
+    # url=URL,
+    # project_urls={
+    #     "Documentation": DOCUMENTATION,
+    #     "Source Code": REPOSITORY,
+    #     "Bug Tracker": f"{REPOSITORY}/issues",
+    # },
     license=LICENSE,
     python_requires=PYTHON_REQUIRES,
     
@@ -175,12 +175,12 @@ setuptools.setup(
         "keras"
     ],
     
-    # Project URLs
-    project_urls={
-        "Homepage": URL,
-        "Documentation": DOCUMENTATION,
-        "Repository": REPOSITORY,
-        "Bug Reports": f"{REPOSITORY}/issues",
-        "Source": REPOSITORY,
-    },
+    # # Project URLs
+    # project_urls={
+    #     "Homepage": URL,
+    #     "Documentation": DOCUMENTATION,
+    #     "Repository": REPOSITORY,
+    #     "Bug Reports": f"{REPOSITORY}/issues",
+    #     "Source": REPOSITORY,
+    # },
 )

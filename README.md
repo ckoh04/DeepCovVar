@@ -8,7 +8,7 @@ A comprehensive bioinformatics package for predicting and classifying COVID-19 v
 - **Automatic Sequence Processing**: Intelligent detection and conversion of nucleotide sequences to protein sequences
 - **Prodigal Integration**: Seamless nucleotide-to-protein conversion using Prodigal gene prediction software
 - **Advanced Deep Learning Models**: Keras and PyTorch-based models for optimal performance
-- **Quantized Models**: Space-optimized models for efficient deployment
+- **Optimized Models**: Space-optimized models for efficient deployment
 - **Comprehensive Sequence Analysis**: Feature extraction and preprocessing capabilities
 - **Command-Line Interface**: Easy-to-use CLI for batch processing with pipeline automation
 - **Python API**: Programmatic access for integration into workflows
@@ -108,10 +108,10 @@ DeepCovVar automatically detects and processes different sequence types:
 
 ## Model Architecture
 
-- **Phase 1-4**: Keras-based neural networks with quantized weights
+- **Phase 1-4**: Keras-based neural networks with optimized weights
 - **Phase 5**: PyTorch Transformer model (ESM-2) for sequence classification
 - **Feature Extraction**: CKSAAP (Composition of k-spaced Amino Acid Pairs)
-- **Optimization**: Quantized models for reduced memory footprint
+- **Optimization**: Optimized models for reduced memory footprint
 
 ## Output Files
 

@@ -1,8 +1,8 @@
 COVID CLASSIFICATION PIPELINE SUMMARY REPORT
 ==================================================
 
-Input file: test_5_sequences.fasta
-Generated: 2025-08-14 10:46:24.984557
+Input file: /home/ai-lab2/CovProj/DeepCovVar/DeepCovVar/tests/test_5_sequences.fasta
+Generated: 2025-08-14 12:07:10.281444
 
 PHASE RESULTS SUMMARY:
 ------------------------------
@@ -45,8 +45,9 @@ Status: Completed
 Classes: Omicron, Alpha, Delta, Epsilon, Iota, Gamma, Others
 Sequences processed: 55
 Predictions:
-  Others: 30
-  Delta: 25
+  Others: 46
+  Iota: 8
+  Alpha: 1
 
 ==================================================
 End of Report

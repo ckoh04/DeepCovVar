@@ -53,36 +53,36 @@ class COVIDClassifier:
         
         self.models_config = {
             1: {
-                'file': 'p1_40_final_model_quantized.keras',
-                'description': 'Virus sequences vs Others (Quantized)',
+                        'file': 'p1_40_final_model_quantized.keras',
+        'description': 'Virus sequences vs Others',
                 'classes': ['Virus', 'Non-virus'],
                 'feature_size': 2400,  # CKSAAP with gap=5: (5+1)*400 = 2400
                 'type': 'keras'
             },
             2: {
-                'file': 'p2_final_model_quantized.keras',
-                'description': '(+)ssRNA (Class IV) vs Others (Quantized)',
+                        'file': 'p2_final_model_quantized.keras',
+        'description': '(+)ssRNA (Class IV) vs Others',
                 'classes': ['Others', '(+)ssRNA'],
                 'feature_size': 2400,
                 'type': 'keras'
             },
             3: {
-                'file': 'p3_final_model_quantized.keras',
-                'description': 'Further classification of group IV ssRNA(+) (Quantized)',
+                        'file': 'p3_final_model_quantized.keras',
+        'description': 'Further classification of group IV ssRNA(+)',
                 'classes': ['Other ssRNA(+)', 'Coronavirus'],
                 'feature_size': 2400,
                 'type': 'keras'
             },
             4: {
-                'file': 'p4_final_model_quantized.keras',
-                'description': 'SARS-CoV-2 vs other coronaviruses (Quantized)',
+                        'file': 'p4_final_model_quantized.keras',
+        'description': 'SARS-CoV-2 vs other coronaviruses',
                 'classes': ['SARS-CoV-2', 'MERS', 'SARS', 'Others'],
                 'feature_size': 2400,
                 'type': 'keras'
             },
             5: {
-                'file': 'p5_final_model_quantized.pt',
-                'description': 'SARS-CoV-2 variant classification (Quantized)',
+                        'file': 'p5_final_model_quantized.pt',
+        'description': 'SARS-CoV-2 variant classification',
                 'classes': ['Omicron', 'Alpha', 'Delta', 'Epsilon', 'Iota', 'Gamma', 'Others'], 
                 'feature_size': None, 
                 'type': 'pytorch_transformer'
@@ -125,13 +125,13 @@ class COVIDClassifier:
                 ignore_mismatched_sizes=True
             )
             
-            # Try to load quantized state dict first, fall back to original if not found
+            # Try to load state dict first, fall back to original if not found
             state_dict_path = model_dir / "model_state_dict_quantized.pt"
             if not state_dict_path.exists():
                 state_dict_path = model_dir / "model_state_dict.pt"
-                print("Quantized model not found, using original model")
+                print("Model not found, using original model")
             else:
-                print("Loading quantized model weights...")
+                print("Loading model weights...")
             
             if not state_dict_path.exists():
                 raise FileNotFoundError(f"Model state dict not found: {state_dict_path}")
@@ -187,17 +187,17 @@ class COVIDClassifier:
         else:
             model_path = self.model_dir / config['file']
             
-            # If quantized model doesn't exist, fall back to original
+            # If model doesn't exist, fall back to original
             if not model_path.exists():
                 original_file = config['file'].replace('_quantized.keras', '.keras')
                 model_path = self.model_dir / original_file
                 if model_path.exists():
-                    print(f"Quantized model not found, using original: {original_file}")
+                    print(f"Model not found, using original: {original_file}")
                     config['description'] = config['description'].replace(' (Quantized)', '')
                 else:
                     raise FileNotFoundError(f"Model file not found: {model_path}")
             else:
-                print(f"Using quantized model: {config['file']}")
+                print(f"Using model: {config['file']}")
             
             print(f"Loading model for Phase {phase}: {config['description']}")
             
@@ -587,7 +587,7 @@ class COVIDClassifier:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="DeepCovVar - COVID-19 Variant Classifier with Automatic Nucleotide Conversion (Using Quantized Models)",
+        description="DeepCovVar - COVID-19 Variant Classifier with Automatic Nucleotide Conversion",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog= """
                     Examples:

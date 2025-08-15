@@ -104,15 +104,15 @@ def test_model_files():
             print("This is expected if models haven't been downloaded yet")
             return True  # Don't fail the test for missing models
         
-        # Check for quantized models
-        quantized_models = list(model_dir.glob("*quantized.keras"))
-        if not quantized_models:
-            print("Warning: No quantized models found")
+        # Check for optimized models
+        optimized_models = list(model_dir.glob("*quantized.keras"))
+        if not optimized_models:
+            print("Warning: No optimized models found")
             print("This is expected if models haven't been downloaded yet")
             return True  # Don't fail the test for missing models
         
-        print(f"Found {len(quantized_models)} quantized models:")
-        for model in quantized_models:
+        print(f"Found {len(optimized_models)} optimized models:")
+        for model in optimized_models:
             print(f"  - {model.name}")
         
         return True
