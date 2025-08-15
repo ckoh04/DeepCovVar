@@ -57,7 +57,7 @@ def main():
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     
     # Build the command
-    cmd = f"python -m DeepCovVar -f {input_file} -o {output_dir} --all-phases"
+    cmd = f"python -m deepcovvar -f {input_file} -o {output_dir} --all-phases"
     if verbose:
         cmd += " --verbose"
     

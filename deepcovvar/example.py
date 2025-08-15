@@ -15,7 +15,7 @@ def example_basic_usage():
     print("=" * 40)
     
     try:
-        from DeepCovVar.covid_classifier import COVIDClassifier
+        from deepcovvar.covid_classifier import COVIDClassifier
         
         # Initialize classifier
         print("1. Initializing COVIDClassifier...")
@@ -48,7 +48,7 @@ def example_batch_processing():
     print("=" * 40)
     
     try:
-        from DeepCovVar.covid_classifier import COVIDClassifier
+        from deepcovvar.covid_classifier import COVIDClassifier
         from Bio import SeqIO
         
         # Initialize classifier
@@ -112,7 +112,7 @@ def main():
     
     print("\nAll examples completed successfully!")
     print("\nTo run DeepCovVar from command line:")
-    print("  python -m DeepCovVar -f input.fasta -o results -p 1")
+    print("  python -m deepcovvar -f input.fasta -o results -p 1")
     
     return 0
 

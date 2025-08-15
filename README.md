@@ -55,22 +55,22 @@ python run_deepcovvar_simple.py --verbose input.fasta results/
 
 ```bash
 # Run complete pipeline (all phases) - recommended
-python -m DeepCovVar -f input.fasta -o output_dir --all-phases
+python -m deepcovvar -f input.fasta -o output_dir --all-phases
 
 # Run specific phase
-python -m DeepCovVar -f input.fasta -o output_dir -p 5
+python -m deepcovvar -f input.fasta -o output_dir -p 5
 
 # Use default output directory (current directory)
-python -m DeepCovVar -f input.fasta --all-phases
+python -m deepcovvar -f input.fasta --all-phases
 
 # Run with verbose output
-python -m DeepCovVar -f input.fasta -o output_dir --all-phases --verbose
+python -m deepcovvar -f input.fasta -o output_dir --all-phases --verbose
 ```
 
 ### Python API Usage
 
 ```python
-from DeepCovVar.covid_classifier import COVIDClassifier
+from deepcovvar.covid_classifier import COVIDClassifier
 
 # Initialize classifier
 classifier = COVIDClassifier()

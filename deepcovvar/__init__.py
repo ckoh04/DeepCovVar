@@ -37,9 +37,9 @@ Modules:
     - feature_data: Feature data handling and management
 
 Usage Example:
-    >>> from DeepCovVar.covid_classifier import COVIDClassifier
-    >>> from DeepCovVar.features import FEATURE
-    >>> from DeepCovVar.neminer_utils import preprocess
+    >>> from deepcovvar.covid_classifier import COVIDClassifier
+>>> from deepcovvar.features import FEATURE
+>>> from deepcovvar.neminer_utils import preprocess
     >>> 
     >>> # Preprocess sequences
     >>> data = preprocess('input.fasta', 'DPC', [0, 0], 400)

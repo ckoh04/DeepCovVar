@@ -139,7 +139,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     include_package_data=True,
     package_data={
-        "DeepCovVar": [
+        "deepcovvar": [
             "models/*.keras",
             "models/*.pt",
             "models/*.h5",
@@ -153,7 +153,7 @@ setuptools.setup(
     # Entry points for command-line tools
     entry_points={
         "console_scripts": [
-            "deepcovvar=DeepCovVar.__main__:main",
+            "deepcovvar=deepcovvar.__main__:main",
         ],
     },
     

@@ -94,13 +94,13 @@ import tensorflow.python.util.deprecation as deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 
 # Local imports
-from DeepCovVar import (
+from deepcovvar import (
     covid_classifier,
     features,
     neminer_utils,
     __version__
 )
-from DeepCovVar.covid_classifier import COVIDClassifier
+from deepcovvar.covid_classifier import COVIDClassifier
 
 # Additional TensorFlow CPU configuration
 tf.keras.backend.set_floatx('float32')  # Use float32 for better CPU performance
@@ -152,13 +152,13 @@ def main():
         epilog="""
 Examples:
   # Run a specific phase
-  python -m DeepCovVar -f input.fasta -o output_dir -p 5
+  python -m deepcovvar -f input.fasta -o output_dir -p 5
   
   # Run all phases (recommended)
-  python -m DeepCovVar -f input.fasta -o output_dir --all-phases
+  python -m deepcovvar -f input.fasta -o output_dir --all-phases
   
   # Use default output directory (current directory)
-  python -m DeepCovVar -f input.fasta --all-phases
+  python -m deepcovvar -f input.fasta --all-phases
         """
     )
     
