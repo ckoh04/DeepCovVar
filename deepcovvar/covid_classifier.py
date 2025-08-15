@@ -366,9 +366,13 @@ class COVIDClassifier:
             print(f"Error processing sequences: {e}")
             raise
     
-    def predict(self, phase, input_file, output_file=None):
+    def predict(self, phase, input_file, output_file=None, custom_thresholds=None):
         model = self.load_model(phase)
         config = self.models_config[phase]
+        
+        # Handle custom thresholds for binary classification
+        if custom_thresholds is None and len(config['classes']) == 2:
+            custom_thresholds = self._get_binary_thresholds(phase, config)
         
         sequences, seq_ids = self.read_sequences(input_file)
 
@@ -396,11 +400,20 @@ class COVIDClassifier:
                 predicted_classes = np.argmax(predictions, axis=1)
                 confidence_scores = np.max(predictions, axis=1)
             else:
-                # Binary classification
-                predicted_classes = (predictions > 0.5).astype(int).flatten()
-                confidence_scores = np.where(predicted_classes == 1, 
-                                           predictions.flatten(), 
-                                           1 - predictions.flatten())
+                # Binary classification with custom thresholds
+                if custom_thresholds:
+                    # Use custom threshold for first class (index 0)
+                    threshold = custom_thresholds[config['classes'][0]]
+                    predicted_classes = (predictions >= threshold).astype(int).flatten()
+                    confidence_scores = np.where(predicted_classes == 1, 
+                                               predictions.flatten(), 
+                                               1 - predictions.flatten())
+                else:
+                    # Default 50% threshold
+                    predicted_classes = (predictions > 0.5).astype(int).flatten()
+                    confidence_scores = np.where(predicted_classes == 1, 
+                                               predictions.flatten(), 
+                                               1 - predictions.flatten())
                 
         elif config['type'] == 'pytorch':
             with torch.no_grad():
@@ -520,6 +533,64 @@ class COVIDClassifier:
             print(f"\nResults saved to: {output_file}")
         
         return results_df
+    
+    def _get_binary_thresholds(self, phase, config):
+        """
+        Get custom thresholds for binary classification phases from user input.
+        
+        Args:
+            phase: Phase number
+            config: Model configuration
+            
+        Returns:
+            Dictionary mapping class names to thresholds, or None if user chooses default
+        """
+        if len(config['classes']) != 2:
+            return None
+            
+        print(f"\n{'='*60}")
+        print(f"BINARY CLASSIFICATION THRESHOLD SETTING - PHASE {phase}")
+        print(f"{'='*60}")
+        print(f"Phase: {config['description']}")
+        print(f"Classes: {config['classes'][0]} vs {config['classes'][1]}")
+        print(f"\nCurrent default threshold: 50% (0.5)")
+        print(f"Example: If you set {config['classes'][0]} threshold to 40%, then")
+        print(f"any sequence with ≥40% {config['classes'][0]} probability will be classified as {config['classes'][0]}")
+        print(f"regardless of the {config['classes'][1]} probability.")
+        
+        while True:
+            choice = input(f"\nDo you want to set custom thresholds? (y/n): ").lower().strip()
+            if choice in ['y', 'yes']:
+                break
+            elif choice in ['n', 'no']:
+                print(f"Using default 50% threshold for Phase {phase}")
+                return None
+            else:
+                print("Please enter 'y' or 'n'")
+        
+        thresholds = {}
+        for i, class_name in enumerate(config['classes']):
+            while True:
+                try:
+                    threshold_input = input(f"Enter threshold for {class_name} (0-100%): ").strip()
+                    if threshold_input.endswith('%'):
+                        threshold_input = threshold_input[:-1]
+                    
+                    threshold = float(threshold_input) / 100.0
+                    if 0.0 <= threshold <= 1.0:
+                        thresholds[class_name] = threshold
+                        print(f"Set {class_name} threshold to {threshold:.1%}")
+                        break
+                    else:
+                        print("Threshold must be between 0% and 100%")
+                except ValueError:
+                    print("Please enter a valid number")
+        
+        print(f"\nCustom thresholds set for Phase {phase}:")
+        for class_name, threshold in thresholds.items():
+            print(f"  {class_name}: {threshold:.1%}")
+        
+        return thresholds
     
     def run_all_phases(self, input_file, output_dir=None, base_filename=None):
         """
@@ -675,7 +746,13 @@ class COVIDClassifier:
                 if not output_file:
                     output_file = default_output
             
-            return self.predict(phase, input_file, output_file)
+            # For binary classification phases, ask about thresholds
+            config = self.models_config[phase]
+            custom_thresholds = None
+            if len(config['classes']) == 2:
+                custom_thresholds = self._get_binary_thresholds(phase, config)
+            
+            return self.predict(phase, input_file, output_file, custom_thresholds)
 
 
 def main():

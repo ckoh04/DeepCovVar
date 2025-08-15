@@ -158,6 +158,9 @@ Examples:
   
   # Use default output directory (current directory)
   python -m deepcovvar -f input.fasta --all-phases
+  
+  # Run binary classification with custom thresholds
+  python -m deepcovvar -f input.fasta -o output_dir -p 1 --thresholds 40 60
         """
     )
     
@@ -190,6 +193,13 @@ Examples:
         '--model-dir',
         default='models',
         help='Directory containing model files (default: models)'
+    )
+    
+    parser.add_argument(
+        '--thresholds',
+        nargs=2,
+        metavar=('CLASS1_THRESHOLD', 'CLASS2_THRESHOLD'),
+        help='Custom thresholds for binary classification (e.g., --thresholds 40 60 for 40%% and 60%%)'
     )
     
     parser.add_argument(
@@ -282,7 +292,32 @@ Examples:
                 # Extract features and predict
                 try:
                     # Use the correct predict method
-                    prediction_result = classifier.predict(args.phase, args.fasta)
+                    # For binary classification phases, handle thresholds
+                    config = classifier.models_config[args.phase]
+                    custom_thresholds = None
+                    if len(config['classes']) == 2:
+                        if args.thresholds:
+                            # Use command-line thresholds
+                            try:
+                                threshold1 = float(args.thresholds[0]) / 100.0
+                                threshold2 = float(args.thresholds[1]) / 100.0
+                                if 0.0 <= threshold1 <= 1.0 and 0.0 <= threshold2 <= 1.0:
+                                    custom_thresholds = {
+                                        config['classes'][0]: threshold1,
+                                        config['classes'][1]: threshold2
+                                    }
+                                    print(f"Using command-line thresholds: {config['classes'][0]}={threshold1:.1%}, {config['classes'][1]}={threshold2:.1%}")
+                                else:
+                                    print("Warning: Thresholds must be between 0 and 100. Using interactive mode.")
+                                    custom_thresholds = classifier._get_binary_thresholds(args.phase, config)
+                            except ValueError:
+                                print("Warning: Invalid threshold values. Using interactive mode.")
+                                custom_thresholds = classifier._get_binary_thresholds(args.phase, config)
+                        else:
+                            # Use interactive mode
+                            custom_thresholds = classifier._get_binary_thresholds(args.phase, config)
+                    
+                    prediction_result = classifier.predict(args.phase, args.fasta, custom_thresholds=custom_thresholds)
                     
                     # Extract prediction for this specific sequence
                     seq_prediction = prediction_result[prediction_result['Sequence_ID'] == seq_record.id]
