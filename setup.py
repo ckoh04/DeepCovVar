@@ -25,7 +25,7 @@ import setuptools
 from pathlib import Path
 
 # Package metadata
-NAME = "DeepCovVar"
+NAME = "deepcovvar"
 DESCRIPTION = "Deep learning-based COVID-19 variant prediction and classification tool"
 AUTHOR = ""
 AUTHOR_EMAIL = ""
