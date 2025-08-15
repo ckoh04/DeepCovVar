@@ -21,9 +21,8 @@ import pandas as pd
 import json
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-from .features import FEATURE
-from .neminer_utils import preprocess, preprocessdf
-from .sequence_converter import SequenceProcessor
+from .utils import FEATURE, preprocess, preprocessdf
+from .utils import SequenceProcessor
 
 class TransformerModel(nn.Module):
     def __init__(self, vocab_size, d_model=512, nhead=8, num_layers=6, num_classes=3):

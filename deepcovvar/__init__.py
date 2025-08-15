@@ -30,16 +30,16 @@ Key Features:
 Modules:
     - covid_classifier: Main COVID-19 classifier class
         - COVIDClassifier: Main classifier with multi-phase prediction
-    - features: Feature extraction and processing
-        - FEATURE: Feature extraction class
-    - neminer_utils: Utility functions for sequence processing
-        - preprocess: Sequence preprocessing functions
-    - feature_data: Feature data handling and management
+    - utils: Utility modules
+        - features: Feature extraction and processing
+        - neminer_utils: Utility functions for sequence processing
+        - feature_data: Feature data handling and management
+        - sequence_converter: Sequence type detection and conversion
 
 Usage Example:
     >>> from deepcovvar.covid_classifier import COVIDClassifier
->>> from deepcovvar.features import FEATURE
->>> from deepcovvar.neminer_utils import preprocess
+>>> from deepcovvar.utils import FEATURE
+>>> from deepcovvar.utils import preprocess
     >>> 
     >>> # Preprocess sequences
     >>> data = preprocess('input.fasta', 'DPC', [0, 0], 400)
@@ -72,9 +72,8 @@ __author__ = ""
 __license__ = "GPL-3.0"
 
 from .covid_classifier import COVIDClassifier
-from .features import FEATURE
-from .neminer_utils import preprocess, preprocessdf
-from .feature_data import *
+from .utils import FEATURE, preprocess, preprocessdf
+from .utils.feature_data import *
 
 # Define public API
 __all__ = [

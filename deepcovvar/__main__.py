@@ -96,8 +96,7 @@ deprecation._PRINT_DEPRECATION_WARNINGS = False
 # Local imports
 from deepcovvar import (
     covid_classifier,
-    features,
-    neminer_utils,
+    utils,
     __version__
 )
 from deepcovvar.covid_classifier import COVIDClassifier
