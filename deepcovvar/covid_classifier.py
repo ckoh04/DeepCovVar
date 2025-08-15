@@ -19,6 +19,7 @@ import torch.nn as nn
 from Bio import SeqIO
 import pandas as pd
 import json
+import pkg_resources
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 from .utils import FEATURE, preprocess, preprocessdf
@@ -44,8 +45,16 @@ class TransformerModel(nn.Module):
         return logits
 
 class COVIDClassifier:
-    def __init__(self, model_dir="models", prodigal_path=None, batch_size=32):
-        self.model_dir = Path(model_dir)
+    def __init__(self, model_dir=None, prodigal_path=None, batch_size=32):
+        # Use pkg_resources to get model directory from installed package
+        if model_dir is None:
+            try:
+                self.model_dir = Path(pkg_resources.resource_filename('deepcovvar', 'models'))
+            except Exception:
+                # Fallback for development when package is not installed
+                self.model_dir = Path(__file__).parent / "models"
+        else:
+            self.model_dir = Path(model_dir)
         self.feature_extractor = FEATURE()
         self.sequence_processor = SequenceProcessor(prodigal_path)
         self.batch_size = batch_size  # Configurable batch size for memory management
@@ -90,11 +99,43 @@ class COVIDClassifier:
         
         self.loaded_models = {}
         self.tokenizer = None
+        
+        # Get model paths using pkg_resources
+        self._update_model_paths()
+    
+    def _update_model_paths(self):
+        """Update model file paths using pkg_resources for installed package."""
+        try:
+            for phase, config in self.models_config.items():
+                if config['type'] == 'keras':
+                    # For Keras models, use pkg_resources
+                    try:
+                        config['_full_path'] = pkg_resources.resource_filename('deepcovvar', f"models/{config['file']}")
+                    except Exception:
+                        # Fallback to relative path for development
+                        config['_full_path'] = str(self.model_dir / config['file'])
+                elif config['type'] == 'pytorch_transformer':
+                    # For PyTorch models, also use pkg_resources
+                    try:
+                        config['_full_path'] = pkg_resources.resource_filename('deepcovvar', f"models/{config['file']}")
+                    except Exception:
+                        # Fallback to relative path for development
+                        config['_full_path'] = str(self.model_dir / config['file'])
+        except Exception as e:
+            print(f"Warning: Could not update model paths with pkg_resources: {e}")
+            # Fallback: use relative paths
+            for phase, config in self.models_config.items():
+                config['_full_path'] = str(self.model_dir / config['file'])
     
     def load_transformer_model(self, model_path):
         model_dir = Path(model_path)
         
-        config_path = model_dir / "config.pt"
+        # Try to get config file path using pkg_resources first
+        try:
+            config_path = Path(pkg_resources.resource_filename('deepcovvar', 'models/config.pt'))
+        except Exception:
+            config_path = model_dir / "config.pt"
+        
         if not config_path.exists():
             raise FileNotFoundError(f"Config file not found: {config_path}")
         
@@ -125,9 +166,16 @@ class COVIDClassifier:
             )
             
             # Try to load state dict first, fall back to original if not found
-            state_dict_path = model_dir / "model_state_dict_quantized.pt"
+            try:
+                state_dict_path = Path(pkg_resources.resource_filename('deepcovvar', 'models/model_state_dict_quantized.pt'))
+            except Exception:
+                state_dict_path = model_dir / "model_state_dict_quantized.pt"
+                
             if not state_dict_path.exists():
-                state_dict_path = model_dir / "model_state_dict.pt"
+                try:
+                    state_dict_path = Path(pkg_resources.resource_filename('deepcovvar', 'models/model_state_dict.pt'))
+                except Exception:
+                    state_dict_path = model_dir / "model_state_dict.pt"
                 print("Model not found, using original model")
             else:
                 print("Loading model weights...")
@@ -184,12 +232,26 @@ class COVIDClassifier:
             print(f"Loading transformer model for Phase {phase}: {config['description']}")
             model = self.load_transformer_model(model_path)
         else:
-            model_path = self.model_dir / config['file']
+            # Use the full path from pkg_resources if available
+            if '_full_path' in config:
+                model_path = Path(config['_full_path'])
+            else:
+                model_path = self.model_dir / config['file']
             
             # If model doesn't exist, fall back to original
             if not model_path.exists():
                 original_file = config['file'].replace('_quantized.keras', '.keras')
-                model_path = self.model_dir / original_file
+                if '_full_path' in config:
+                    # Try to get original file path from pkg_resources
+                    try:
+                        original_path = pkg_resources.resource_filename('deepcovvar', f"models/{original_file}")
+                        model_path = Path(original_path)
+                    except Exception:
+                        # Fallback to relative path
+                        model_path = self.model_dir / original_file
+                else:
+                    model_path = self.model_dir / original_file
+                    
                 if model_path.exists():
                     print(f"Model not found, using original: {original_file}")
                     config['description'] = config['description'].replace(' (Quantized)', '')
@@ -199,7 +261,7 @@ class COVIDClassifier:
                 print(f"Using model: {config['file']}")
             
             print(f"Loading model for Phase {phase}: {config['description']}")
-            
+                
             if config['type'] == 'keras':
                 model = tf.keras.models.load_model(str(model_path))
             elif config['type'] == 'pytorch':

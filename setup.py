@@ -143,6 +143,8 @@ setuptools.setup(
             "models/*.keras",
             "models/*.pt",
             "models/*.h5",
+            "models/*.json",
+            "models/*.txt",
         ],
     },
     
