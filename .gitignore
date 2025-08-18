@@ -157,3 +157,6 @@ test_pipeline.py
 !special_tokens_map.json
 !tokenizer_config.json
 !vocab.txt
+
+# Local web interface (kept out of GitHub)
+webapp/
