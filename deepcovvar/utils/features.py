@@ -3,36 +3,17 @@
 """
 Title: Script for protein feature generation
 Author: Naveen Duhan
-Cleaned up for DeepCovVar project - only keeping used methods
 """
 
 import numpy as np
 from .feature_data import *
 
 class FEATURE:
-    """
-    Class for protein feature generation from amino acid sequences for training
-    Cleaned up version for DeepCovVar project
-    """
 
     def __init__(self):
         self.AA = AA
-        self.AAP = AAP
-        self.AAG = AAG
         self._conj = conj
         self.gr = gr
-        self.sw = sw
-        self.AADict = AADict
-        self.AAProperty = AAProperty
-        self.AAProperty1 = AAProperty1
-        self.AAidx = AAidx
-        self.groups = groups
-        self.property = property
-        self.table = table
-        self.protein_eiip = protein_eiip
-        self.Hydrophobicity = Hydrophobicity
-        self.Hydrophilicity = Hydrophilicity
-        self.sidechains = sidechains
 
     def AAC(self, seq):
         """Amino acid composition vector size(20)"""
