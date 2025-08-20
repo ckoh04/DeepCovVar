@@ -5,7 +5,6 @@ Title: Script for protein feature generation
 Author: Naveen Duhan
 """
 
-import numpy as np
 from .feature_data import *
 
 class FEATURE:
