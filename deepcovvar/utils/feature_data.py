@@ -1,8 +1,4 @@
 #!/usr/bin/python
-"""
-Minimal feature data for DeepCovVar
-Only exports required by cleaned feature extraction code.
-"""
 
 # Amino Acid one letter codes
 AA = ['A', 'R', 'N', 'D', 'C', 'E', 'Q', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']

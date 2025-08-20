@@ -1,7 +1,6 @@
 #!/usr/bin/python
 # Script for pre-processing data
 # Author: Naveen Duhan
-# Cleaned up for DeepCovVar project - only keeping used functions
 import numpy as np
 from .features import *
 import re
