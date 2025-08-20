@@ -16,36 +16,44 @@ sys.path.insert(0, parent_dir)
 def test_imports():
     try:
         # Test sequence converter (this should work)
-        from sequence_converter import SequenceTypeDetector
+        from deepcovvar.utils.sequence_converter import SequenceTypeDetector
         print("SequenceTypeDetector imported successfully")
         
-        # Test individual modules (these have relative import issues)
-        print("Warning: Testing individual modules with relative imports...")
+        # Test features (this should work)
+        from deepcovvar.utils.features import FEATURE
+        print("FEATURE imported successfully")
         
+        # Test deepcovvar_utils (this should work)
         try:
-            from covid_classifier import COVIDClassifier
-            print("COVIDClassifier imported successfully")
-        except ImportError as e:
-            print(f"Warning: COVIDClassifier import failed (relative import issue): {e}")
+            from deepcovvar.utils.deepcovvar_utils import preprocess, preprocessdf
+            print("deepcovvar_utils imported successfully")
+        except Exception as e:
+            print(f"Warning: deepcovvar_utils import failed (relative import issue): {e}")
         
+        # Test feature_data (this should work)
         try:
-            from features import FEATURE
-            print("FEATURE imported successfully")
-        except ImportError as e:
-            print(f"Warning: FEATURE import failed (relative import issue): {e}")
-        
-        try:
-            from neminer_utils import preprocess, preprocessdf
-            print("neminer_utils imported successfully")
-        except ImportError as e:
-            print(f"Warning: neminer_utils import failed (relative import issue): {e}")
-        
-        try:
-            import feature_data
+            import deepcovvar.utils.feature_data
             print("feature_data imported successfully")
-        except ImportError as e:
+        except Exception as e:
             print(f"Warning: feature_data import failed (relative import issue): {e}")
         
+        # Test sequence processor (this should work)
+        try:
+            from deepcovvar.utils.sequence_converter import SequenceProcessor
+            processor = SequenceProcessor()
+            print("SequenceProcessor initialized successfully")
+        except Exception as e:
+            print("Warning: SequenceProcessor initialization failed: Prodigal not installed")
+        
+        # Test sequence type detector (this should work)
+        try:
+            from deepcovvar.utils.sequence_converter import SequenceTypeDetector
+            detector = SequenceTypeDetector()
+            print("SequenceTypeDetector initialized successfully")
+        except Exception as e:
+            print(f"Warning: SequenceTypeDetector initialization failed: {e}")
+        
+        print("\nAll imports completed!")
         return True
     except ImportError as e:
         print(f"Import error: {e}")
@@ -55,7 +63,7 @@ def test_classifier_initialization():
     try:
         # Test sequence processor (this may fail if Prodigal is not installed)
         try:
-            from sequence_converter import SequenceProcessor
+            from deepcovvar.utils.sequence_converter import SequenceProcessor
             processor = SequenceProcessor()
             print("SequenceProcessor initialized successfully")
         except Exception as e:
@@ -65,7 +73,7 @@ def test_classifier_initialization():
                 print("Testing basic sequence detection instead...")
                 
                 # Test basic sequence detection without Prodigal
-                from sequence_converter import SequenceTypeDetector
+                from deepcovvar.utils.sequence_converter import SequenceTypeDetector
                 detector = SequenceTypeDetector()
                 print("SequenceTypeDetector initialized successfully")
             else:

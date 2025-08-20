@@ -22,3 +22,6 @@ REM "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 GOTO :end
 
 :end
+
+
+
