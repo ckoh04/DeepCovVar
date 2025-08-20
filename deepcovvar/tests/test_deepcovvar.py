@@ -25,7 +25,7 @@ def test_imports():
         
         # Test deepcovvar_utils (this should work)
         try:
-            from deepcovvar.utils.deepcovvar_utils import preprocess, preprocessdf
+            import deepcovvar.utils.deepcovvar_utils
             print("deepcovvar_utils imported successfully")
         except Exception as e:
             print(f"Warning: deepcovvar_utils import failed (relative import issue): {e}")

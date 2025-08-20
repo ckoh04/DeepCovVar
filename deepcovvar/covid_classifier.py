@@ -22,7 +22,7 @@ import json
 import pkg_resources
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-from .utils import FEATURE, preprocess, preprocessdf
+from .utils import FEATURE
 from .utils import SequenceProcessor
 
 class TransformerModel(nn.Module):
