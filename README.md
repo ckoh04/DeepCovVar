@@ -38,19 +38,6 @@ pip install .
 
 ## Quick Start
 
-### Simple Usage (Recommended)
-
-```bash
-# Run complete pipeline with minimal arguments
-python run_deepcovvar_simple.py input.fasta
-
-# Run with custom output directory
-python run_deepcovvar_simple.py input.fasta results/
-
-# Run with verbose output
-python run_deepcovvar_simple.py --verbose input.fasta results/
-```
-
 ### Command Line Usage
 
 ```bash
