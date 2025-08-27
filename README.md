@@ -33,7 +33,7 @@ cd Prodigal
 make install
 
 # Install the package
-pip install -e .
+pip install .
 ```
 
 ## Quick Start
